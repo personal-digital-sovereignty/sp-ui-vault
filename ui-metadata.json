@@ -1,0 +1,9 @@
+{
+	"name": "sp-ui-vault",
+	"version": "0.1.0",
+	"description": "Sovereign Pair vault Micro-Frontend",
+	"moduleType": "vault",
+	"routes": ["/"],
+	"entryPoint": "src/lib/init.ts",
+	"dependencies": ["sp-service-api"]
+}
