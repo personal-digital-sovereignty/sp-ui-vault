@@ -1,9 +1,9 @@
 <script lang="ts">
-import { API_BASE_URL } from '$lib/env_config';
+import { API_BASE_URL } from '@sp/ui-core/config';
 
     import BlockEditor from '$lib/components/BlockEditor.svelte';
     import ChatPanel from '$lib/components/ChatPanel.svelte';
-    import { globalState, loadGlobalSession, stopGeneration } from '$lib/state.svelte.js';
+    import { globalState, loadGlobalSession, stopGeneration } from '@sp/ui-core/state';
     import { untrack, onMount } from 'svelte';
     import { ChevronLeft, ChevronRight, X, Search, FileText, Filter, BrainCircuit, Sparkles, Plus, Trash2, Edit2, Rocket, PanelRight } from 'lucide-svelte';
     import { page } from '$app/stores';
