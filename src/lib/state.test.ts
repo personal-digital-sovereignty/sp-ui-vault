@@ -1,5 +1,5 @@
 import { expect, test, describe } from 'vitest';
-import { globalState, toggleSidebar, setSidebarWidth } from './state.svelte';
+import { globalState, toggleSidebar, setSidebarWidth } from '@sp/ui-core/state';
 
 describe('Global OS Core State ($state Runes)', () => {
     test('Should initialize with expanded sidebar and standard width', () => {
@@ -21,7 +21,7 @@ describe('Global OS Core State ($state Runes)', () => {
 
         setSidebarWidth(800); // Over maximum bounding box
         expect(globalState.sidebarWidth).toBe(600);
-        
+
         setSidebarWidth(350); // Valid
         expect(globalState.sidebarWidth).toBe(350);
     });
