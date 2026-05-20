@@ -7,3 +7,26 @@ build/
 vite.config.ts.timestamp-*
 vitest.config.ts.timestamp-*
 coverage/
+
+# ============================================================================
+# SOVEREIGN SECURITY (from sovereign-pair .gitignore)
+# ============================================================================
+# CRÍTICO: Estes arquivos NUNCA devem ser commitados
+
+# Gitleaks (licença e allowlist local — nunca commitar)
+.gitleaks.key
+.gitleaks.toml
+
+# SAST/SCA scanner configs (local only)
+.trivyignore
+.semgrepignore
+
+# Terraform vars (chaves, senhas, OCI auth)
+*.tfvars
+*.tfvars.json
+*.tfstate
+*.tfstate.backup
+
+# Runtime databases
+*.sqlite
+*.jsonl
