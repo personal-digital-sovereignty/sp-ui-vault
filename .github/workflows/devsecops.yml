@@ -90,7 +90,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run SvelteKit Check
         run: npm run check || echo "::warning::Svelte check completed with type warnings."
@@ -109,7 +109,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run Vitest
         run: npm test
