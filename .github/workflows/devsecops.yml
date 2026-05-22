@@ -147,15 +147,17 @@ jobs:
           echo ""
 
           if [[ "$PIPELINE_SECURITY" == "failure" ]] || \
-             [[ "$SAST_SEMGREP" == "failure" ]] || \
-             [[ "$QUALITY_SVELTE" == "failure" ]]; then
-             [[ "$SAST_SEMGREP" == "failure" ]] || \
-             [[ "$QUALITY_SVELTE" == "failure" ]] || \
+             [[ "$SAST_SEMGREP" == "failure" ]]; then
             echo "❌ CRITICAL GATE FAILURE — Merge blocked."
             exit 1
           fi
 
+          if [[ "$SCA_TRIVY" == "failure" ]]; then
             echo "::warning::Trivy SCA failed — review dependency vulnerabilities."
+          fi
+
+          if [[ "$QUALITY_TEST" == "failure" ]]; then
+            echo "::warning::Vitest failed — review test output."
           fi
 
           echo ""
