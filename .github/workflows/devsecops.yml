@@ -79,6 +79,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
           skip-version-check: true
 
+
   quality-svelte:
     name: "🌐 Gate 3: Svelte Check"
     needs: pipeline-security
