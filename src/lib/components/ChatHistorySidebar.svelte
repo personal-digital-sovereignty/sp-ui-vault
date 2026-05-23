@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { logger } from '@sp/ui-core/logger';
+
 import { API_BASE_URL } from '@sp/ui-core/config';
 
     import { MessageSquare, Plus, Folder as FolderIcon, Trash2, Hash, Edit2, Check, X, ChevronDown, ChevronRight } from 'lucide-svelte';
@@ -26,7 +28,7 @@ import { API_BASE_URL } from '@sp/ui-core/config';
                 collapsedFolders = newCollapsed;
             }
         } catch (e) {
-            console.error("Failed fetching chat sessions", e);
+            logger.error("Failed fetching chat sessions", e);
         } finally {
             isLoading = false;
         }
@@ -80,7 +82,7 @@ import { API_BASE_URL } from '@sp/ui-core/config';
             }
             await fetchSessions();
         } catch(err) {
-            console.error("Deleção falhou", err);
+            logger.error("Deleção falhou", err);
         }
     }
 
@@ -145,7 +147,7 @@ import { API_BASE_URL } from '@sp/ui-core/config';
             }
             await fetchSessions();
         } catch(err) {
-            console.error("Failed to update session", err);
+            logger.error("Failed to update session", err);
         }
     }
 </script>

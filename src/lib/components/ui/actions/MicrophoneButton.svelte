@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { logger } from '@sp/ui-core/logger';
+
 import { API_BASE_URL } from '@sp/ui-core/config';
 
     import { Mic, Loader2, Square } from 'lucide-svelte';
@@ -53,7 +55,7 @@ import { API_BASE_URL } from '@sp/ui-core/config';
             }, 1000);
             
         } catch (err) {
-            console.error("Microphone access denied or failed:", err);
+            logger.error("Microphone access denied or failed:", err);
             dispatch('error', 'Microphone access denied.');
         }
     }
@@ -88,7 +90,7 @@ import { API_BASE_URL } from '@sp/ui-core/config';
                 dispatch('error', 'HTTP ' + response.status);
             }
         } catch (err) {
-            console.error("Transcriber API error:", err);
+            logger.error("Transcriber API error:", err);
             dispatch('error', 'API error.');
         } finally {
             isTranscribing = false;

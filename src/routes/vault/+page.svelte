@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { logger } from '@sp/ui-core/logger';
+
     import { API_BASE_URL } from "@sp/ui-core/config";
 
     import BlockEditor from "@sp/ui-core/lib/components/BlockEditor.svelte";
@@ -283,7 +285,7 @@
                 });
             }
         } catch (e) {
-            console.error(e);
+            logger.error(e);
         } finally {
             isLoading = false;
         }
@@ -320,7 +322,7 @@
             showCreateModal = false;
             fetchFiles();
         } catch (e) {
-            console.error(e);
+            logger.error(e);
         }
     }
 
@@ -344,7 +346,7 @@
             });
             fetchFiles();
         } catch (e) {
-            console.error(e);
+            logger.error(e);
         }
     }
 
@@ -366,7 +368,7 @@
             });
             fetchFiles();
         } catch (e) {
-            console.error(e);
+            logger.error(e);
         }
     }
 

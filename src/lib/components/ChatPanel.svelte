@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { logger } from '@sp/ui-core/logger';
+
     import { API_BASE_URL } from "@sp/ui-core/config";
 
     import {
@@ -142,7 +144,7 @@
                 if (el)
                     el.className = `p-1.5 rounded-lg transition-all ${btnClass}`;
             } catch (e) {
-                console.error("Failed to sync RLHF:", e);
+                logger.error("Failed to sync RLHF:", e);
             }
         }
     }
@@ -151,7 +153,7 @@
         try {
             await navigator.clipboard.writeText(text);
         } catch (err) {
-            console.error("Failed to copy text: ", err);
+            logger.error("Failed to copy text: ", err);
         }
     }
 
