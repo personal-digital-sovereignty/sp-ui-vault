@@ -181,6 +181,11 @@
 	}
 
 	let folders = $state<{ path: string; name: string }[]>([{ path: '', name: 'Raiz do Vault' }]);
+	let currentToken = $state('');
+
+	$effect(() => {
+		currentToken = localStorage.getItem('sovereign_token') || '';
+	});
 
 	function extractFolders(nodes: any[]) {
 		for (const n of nodes) {
@@ -860,7 +865,7 @@
 											<img
 												src="{API_BASE_URL}/v1/vault/media?path={encodeURIComponent(
 													globalState.vault.activeDocumentId,
-												)}"
+												)}&token={currentToken}"
 												alt={activeTab.name}
 												class="max-w-full max-h-[60vh] rounded-lg object-contain"
 											/>
@@ -873,7 +878,7 @@
 										<iframe
 											src="{API_BASE_URL}/v1/vault/media?path={encodeURIComponent(
 												globalState.vault.activeDocumentId,
-											)}"
+											)}&token={currentToken}"
 											class="w-full h-[85vh] border-none"
 											title={activeTab.name}
 										></iframe>

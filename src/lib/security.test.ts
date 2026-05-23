@@ -25,7 +25,7 @@ describe('env_config — API URL Resolution', () => {
 	it('API_BASE_URL deve usar VITE_API_URL se definida', async () => {
 		process.env.VITE_API_URL = 'http://192.168.1.10:38001';
 		// Re-importar após mudar env
-		const { API_BASE_URL } = await import('$lib/env_config');
+		const { API_BASE_URL } = await import('@sp/ui-core/config');
 		// Em JSDOM, import.meta.env pode não refletir o process.env
 		// Validamos o fallback padrão
 		expect(API_BASE_URL).toBeDefined();
@@ -34,14 +34,14 @@ describe('env_config — API URL Resolution', () => {
 	});
 
 	it('API_BASE_URL fallback deve ser 127.0.0.1:38001', async () => {
-		const { API_BASE_URL } = await import('$lib/env_config');
+		const { API_BASE_URL } = await import('@sp/ui-core/config');
 		// O fallback hardcoded é 'http://127.0.0.1:38001'
 		expect(API_BASE_URL).toMatch(/^http/);
 		expect(API_BASE_URL).not.toContain('undefined');
 	});
 
 	it('OLLAMA_BASE_URL deve ser string válida', async () => {
-		const { OLLAMA_BASE_URL } = await import('$lib/env_config');
+		const { OLLAMA_BASE_URL } = await import('@sp/ui-core/config');
 		expect(OLLAMA_BASE_URL).toBeDefined();
 		expect(OLLAMA_BASE_URL).toMatch(/^http/);
 	});
