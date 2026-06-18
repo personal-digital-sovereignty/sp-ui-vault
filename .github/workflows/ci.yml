@@ -29,7 +29,7 @@ jobs:
                   path: sp-ui-core
 
             - name: Link sp-ui-core
-              run: ln -s $(pwd)/sp-ui-core ../sp-ui-core
+              run: ln -s "$(pwd)/sp-ui-core" ../sp-ui-core
 
             - uses: actions/setup-node@v4
               with:
