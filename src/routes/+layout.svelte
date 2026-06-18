@@ -1,9 +1,9 @@
 <script lang="ts">
 	import '../app.css';
+	import ModuleLayout from '@sp/ui-core/lib/components/ModuleLayout.svelte';
+	let { children } = $props();
 </script>
-<div class="sp-ui-module">
+
+<ModuleLayout>
 	{@render children()}
-</div>
-<style>
-	.sp-ui-module { width: 100%; height: 100vh; }
-</style>
+</ModuleLayout>

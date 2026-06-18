@@ -1,0 +1,92 @@
+# =============================================================================
+# sp-ui-vault — Release Pipeline
+# =============================================================================
+# Triggered by a version tag (v*.*.*).
+# Validates the module build and notifies sp-ui-shell to rebuild the
+# Tauri desktop installer with the latest stable micro-frontend versions.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag to release (e.g. v1.6.0)'
+        required: true
+        default: 'v1.6.0'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: 'Validate Release Candidate'
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout sp-ui-core
+        uses: actions/checkout@v4
+        with:
+          repository: personal-digital-sovereignty/sp-ui-core
+          ref: release/add-ci-release-pipelines
+          path: sp-ui-core
+
+      - name: Link sp-ui-core
+        run: ln -s "$(pwd)/sp-ui-core" ../sp-ui-core
+
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Type check
+        run: npm run check
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+  dispatch-desktop-build:
+    name: 'Trigger Tauri Desktop Build'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Resolve tag name
+        id: tag
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "name=$INPUT_TAG" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Dispatch to sp-ui-shell release pipeline
+        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3.0.0
+        with:
+          token: ${{ secrets.CROSS_REPO_PAT }}
+          repository: personal-digital-sovereignty/sp-ui-shell
+          event-type: publish-release
+          client-payload: |
+            {
+              "tag": "${{ steps.tag.outputs.name }}",
+              "source_module": "sp-ui-vault",
+              "triggered_by": "${{ github.actor }}"
+            }

@@ -24,14 +24,17 @@
 ## 🚀 Próximos Passos
 
 ### Imediato
+
 - [ ] npm install e validar build
 - [ ] Adicionar Vitest unit tests
 
 ### Curto Prazo
+
 - [ ] Implementar module loader integration
 - [ ] Search/filter integration com sp-service API
 
 ### Médio Prazo
+
 - [ ] Document preview
 - [ ] Bulk operations
 
@@ -39,7 +42,7 @@
 
 ## 📅 Timeline
 
-| Versão | Data | Foco | Status |
-|--------|------|------|--------|
-| v0.1.0 | 2026-05-11 | Extract | ✅ Done |
+| Versão | Data       | Foco             | Status       |
+| ------ | ---------- | ---------------- | ------------ |
+| v0.1.0 | 2026-05-11 | Extract          | ✅ Done      |
 | v0.2.0 | 2026-06-15 | Unit Tests + API | ⚪ Planejado |

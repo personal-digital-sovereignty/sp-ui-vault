@@ -9,12 +9,12 @@ export default defineConfig({
 		environment: 'jsdom',
 		include: ['src/**/*.{test,spec}.{js,ts}'],
 		setupFiles: ['./src/setupTest.ts'],
-		globals: true
+		globals: true,
 	},
-    resolve: {
+	resolve: {
 		alias: {
 			$lib: path.resolve('./src/lib'),
-            $app: path.resolve('./node_modules/@sveltejs/kit/src/runtime/app')
-		}
-	}
+			$app: path.resolve('./node_modules/@sveltejs/kit/src/runtime/app'),
+		},
+	},
 });

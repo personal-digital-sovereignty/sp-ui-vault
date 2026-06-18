@@ -6,162 +6,185 @@
 name: FOSS DevSecOps
 
 on:
-  pull_request:
-    branches: [ main, 'release/**' ]
-  workflow_dispatch:
-    inputs:
-      skip_trivy:
-        description: 'Skip Trivy SCA scan (faster iteration)'
-        type: boolean
-        default: false
+    pull_request:
+        branches: [main, 'release/**']
+    workflow_dispatch:
+        inputs:
+            skip_trivy:
+                description: 'Skip Trivy SCA scan (faster iteration)'
+                type: boolean
+                default: false
 
-  push:
-    branches: [ main ]
+    push:
+        branches: [main]
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
-  group: devsecops-${{ github.ref }}
-  cancel-in-progress: true
+    group: devsecops-${{ github.ref }}
+    cancel-in-progress: true
 
 permissions: read-all
 
 jobs:
-  pipeline-security:
-    name: "🔒 Gate 0: Actionlint & Zizmor"
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    pipeline-security:
+        name: '🔒 Gate 0: Actionlint & Zizmor'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            actions: read
+            security-events: write
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Check workflow YAML syntax (Actionlint)
-        uses: raven-actions/actionlint@205b530c5d9fa8f44ae9ed59f341a0db994aa6f8 # v2.1.2
+            - name: Check workflow YAML syntax (Actionlint)
+              uses: raven-actions/actionlint@205b530c5d9fa8f44ae9ed59f341a0db994aa6f8 # v2.1.2
 
-      - name: Analyze workflow security logic (Zizmor)
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          pip install zizmor
-          zizmor .github/workflows || echo "::warning::Zizmor audit complete (non-blocking)."
+            - name: Analyze workflow security logic (Zizmor)
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  pip install zizmor
+                  zizmor .github/workflows || echo "::warning::Zizmor audit complete (non-blocking)."
 
-  sast-semgrep:
-    name: "🛡️ Gate 1: Semgrep SAST"
-    needs: pipeline-security
-    runs-on: ubuntu-latest
-    container:
-      image: semgrep/semgrep
-    steps:
-      - uses: actions/checkout@v4
+    sast-semgrep:
+        name: '🛡️ Gate 1: Semgrep SAST'
+        needs: pipeline-security
+        runs-on: ubuntu-latest
+        container:
+            image: semgrep/semgrep
+        steps:
+            - uses: actions/checkout@v4
 
-      - name: Run Semgrep with strict enforcement
-        run: semgrep scan --config auto --error
+            - name: Run Semgrep with strict enforcement
+              run: semgrep scan --config auto --error
 
-  sca-trivy:
-    name: "📦 Gate 2: Trivy SCA"
-    needs: pipeline-security
-    if: ${{ github.event.inputs.skip_trivy != 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    sca-trivy:
+        name: '📦 Gate 2: Trivy SCA'
+        needs: pipeline-security
+        if: ${{ github.event.inputs.skip_trivy != 'true' }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      - name: Scan for CRITICAL/HIGH vulnerabilities in dependencies
-        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
-        with:
-          scan-type: 'fs'
-          ignore-unfixed: true
-          format: 'table'
-          exit-code: 1
-          severity: 'CRITICAL,HIGH'
-          skip-version-check: true
+            - name: Scan for CRITICAL/HIGH vulnerabilities in dependencies
+              uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
+              with:
+                  scan-type: 'fs'
+                  ignore-unfixed: true
+                  format: 'table'
+                  exit-code: 1
+                  severity: 'CRITICAL,HIGH'
+                  skip-version-check: true
 
+    quality-svelte:
+        name: '🌐 Gate 3: Svelte Check'
+        needs: pipeline-security
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
 
-  quality-svelte:
-    name: "🌐 Gate 3: Svelte Check"
-    needs: pipeline-security
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+                  cache: 'npm'
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
+            - name: Install Dependencies
+              run: npm install
 
-      - name: Install Dependencies
-        run: npm install
+            - name: Run SvelteKit Check
+              run: npm run check || true
 
-      - name: Run SvelteKit Check
-        run: npm run check || true
+    quality-test:
+        name: '🧪 Gate 4: Vitest Unit Tests'
+        needs: pipeline-security
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
 
-  quality-test:
-    name: "🧪 Gate 4: Vitest Unit Tests"
-    needs: pipeline-security
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+                  cache: 'npm'
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
+            - name: Install Dependencies
+              run: npm install
 
-      - name: Install Dependencies
-        run: npm install
+            - name: Run Vitest
+              run: npm test || true
 
-      - name: Run Vitest
-        run: npm test || true
+    foss-devsecops-gate:
+        name: '✅ FOSS DevSecOps Gate'
+        if: always()
+        needs:
+            - pipeline-security
+            - sast-semgrep
+            - sca-trivy
+            - quality-svelte
+            - quality-test
+        runs-on: ubuntu-latest
+        permissions:
+            statuses: write
+            contents: read
+        steps:
+            - name: Evaluate gate results
+              env:
+                  PIPELINE_SECURITY: ${{ needs.pipeline-security.result }}
+                  SAST_SEMGREP: ${{ needs.sast-semgrep.result }}
+                  SCA_TRIVY: ${{ needs.sca-trivy.result }}
+                  QUALITY_SVELTE: ${{ needs.quality-svelte.result }}
+                  QUALITY_TEST: ${{ needs.quality-test.result }}
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  echo "═══════════════════════════════════════════════"
+                  echo "  FOSS DevSecOps — Gate Summary"
+                  echo "═══════════════════════════════════════════════"
+                  echo ""
+                  echo "Pipeline Security:  $PIPELINE_SECURITY"
+                  echo "SAST (Semgrep):     $SAST_SEMGREP"
+                  echo "SCA (Trivy):        $SCA_TRIVY"
+                  echo "Svelte (Check):     $QUALITY_SVELTE"
+                  echo "Vitest (Tests):     $QUALITY_TEST"
+                  echo ""
 
-  foss-devsecops-gate:
-    name: "✅ FOSS DevSecOps Gate"
-    if: always()
-    needs:
-      - pipeline-security
-      - sast-semgrep
-      - sca-trivy
-      - quality-svelte
-      - quality-test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Evaluate gate results
-        env:
-          PIPELINE_SECURITY: ${{ needs.pipeline-security.result }}
-          SAST_SEMGREP: ${{ needs.sast-semgrep.result }}
-          SCA_TRIVY: ${{ needs.sca-trivy.result }}
-          QUALITY_SVELTE: ${{ needs.quality-svelte.result }}
-          QUALITY_TEST: ${{ needs.quality-test.result }}
-        run: |
-          echo "═══════════════════════════════════════════════"
-          echo "  FOSS DevSecOps — Gate Summary"
-          echo "═══════════════════════════════════════════════"
-          echo ""
-          echo "Pipeline Security:  $PIPELINE_SECURITY"
-          echo "SAST (Semgrep):     $SAST_SEMGREP"
-          echo "SCA (Trivy):        $SCA_TRIVY"
-          echo "Svelte (Check):     $QUALITY_SVELTE"
-          echo "Vitest (Tests):     $QUALITY_TEST"
-          echo ""
+                  STATE="success"
+                  DESC="ALL FOSS DevSecOps Gates Passed - Merge authorized."
 
-          if [[ "$PIPELINE_SECURITY" == "failure" ]] || \
-             [[ "$SAST_SEMGREP" == "failure" ]]; then
-            echo "❌ CRITICAL GATE FAILURE — Merge blocked."
-            exit 1
-          fi
+                  if [[ "$PIPELINE_SECURITY" == "failure" ]] || \
+                     [[ "$SAST_SEMGREP" == "failure" ]]; then
+                    echo "❌ CRITICAL GATE FAILURE — Merge blocked."
+                    STATE="failure"
+                    DESC="CRITICAL GATE FAILURE - Merge blocked."
+                  fi
 
-          if [[ "$SCA_TRIVY" == "failure" ]]; then
-            echo "::warning::Trivy SCA failed — review dependency vulnerabilities."
-          fi
+                  if [[ "$SCA_TRIVY" == "failure" ]]; then
+                    echo "::warning::Trivy SCA failed — review dependency vulnerabilities."
+                  fi
 
-          if [[ "$QUALITY_TEST" == "failure" ]]; then
-            echo "::warning::Vitest failed — review test output."
-          fi
+                  if [[ "$QUALITY_TEST" == "failure" ]]; then
+                    echo "::warning::Vitest failed — review test output."
+                  fi
 
-          echo ""
-          echo "🎯 ALL FOSS DevSecOps Gates Passed — Merge authorized."
-          echo "ℹ️  Secret scanning handled by local pre-push hook (Gitleaks Docker)."
+                  SHA="${{ github.event.pull_request.head.sha }}"
+                  if [ -z "$SHA" ]; then
+                    SHA="${{ github.sha }}"
+                  fi
+
+                  echo "Reporting status '$STATE' to context 'FOSS DevSecOps Gate' for commit $SHA..."
+                  curl -s -X POST \
+                    -H "Authorization: token $GH_TOKEN" \
+                    -H "Accept: application/vnd.github.v3+json" \
+                    https://api.github.com/repos/${{ github.repository }}/statuses/$SHA \
+                    -d "{\"state\":\"$STATE\", \"context\":\"FOSS DevSecOps Gate\", \"description\":\"$DESC\", \"target_url\":\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"
+
+                  if [ "$STATE" = "failure" ]; then
+                    exit 1
+                  fi
+
+                  echo ""
+                  echo "🎯 ALL FOSS DevSecOps Gates Passed — Merge authorized."
+                  echo "ℹ️  Secret scanning handled by local pre-push hook (Gitleaks Docker)."
