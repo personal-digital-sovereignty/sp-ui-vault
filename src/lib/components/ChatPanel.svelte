@@ -31,7 +31,7 @@
 		stopGeneration,
 	} from '@sp/ui-core/state';
 	import { settingsState } from '@sp/ui-core/settings';
-	import MicrophoneButton from './ui/actions/MicrophoneButton.svelte';
+	import MicrophoneButton from '@sp/ui-core/lib/components/ui/actions/MicrophoneButton.svelte';
 	import { marked } from 'marked';
 	import DOMPurify from 'dompurify';
 	import { onMount, untrack } from 'svelte';
