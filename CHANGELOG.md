@@ -38,3 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 - `devalue` atualizado para 5.8.1, corrigindo CVE-2026-42570; hook de pre-push Gitleaks adicionado; `package-lock.json` versionado.
+
+## [Unreleased]
+### Fixed
+- Resolved Module Federation Hydration and Build issues by using Vanilla JS Wrappers for remote components.

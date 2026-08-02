@@ -14,8 +14,9 @@ export default defineConfig({
 		federation({
 			name: 'sp_ui_vault',
 			filename: 'remoteEntry.js',
+	dts: false,
 			exposes: {
-				'./VaultPage': './src/routes/vault/+page.svelte',
+				'./VaultPage': './src/routes/vault/Wrapper.ts',
 			},
 			shared: ['svelte'],
 		}),
