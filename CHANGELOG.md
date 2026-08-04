@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - **Trivy (SCA)**: corrigidas 3 vulnerabilidades `HIGH` do gate `FOSS DevSecOps` — `CVE-2026-59869` (`js-yaml`, DoS) via bump para `^4.3.0`; `CVE-2026-48801`/`CVE-2026-59887` (`linkify-it`, DoS algorítmico/mailto) via override forçado para `5.0.2`. Revalidado localmente com Trivy v0.72.0 real: 0 vulnerabilidades.
 - **Semgrep (SAST)**: `actions/checkout@v4` e `actions/setup-node@v4` fixados em SHA de commit em todos os workflows, resolvendo a regra `github-actions-mutable-action-tag`.
+- **Correção do gate quebrado**: o SHA de `actions/setup-node` pinado acima estava incorreto (inexistente no repositório real), derrubando toda pipeline com "unable to resolve action". Corrigido para o SHA real de v4.1.0.
 
 ## [0.1.0] - 2026-05-09 a 2026-06-18
 
