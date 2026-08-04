@@ -7,13 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased] — GAP Item 7: Confiabilidade da Interface (2026-08-01)
+## [1.5.0-rc.1] - 2026-08-04
 
 ### Changed
 - **Design System centralizado**: `app.css` agora importa `@sp/ui-core/theme.css` em vez de manter cópia própria.
 
 ### Known Issue (achado, não corrigido nesta rodada)
 - Build de produção falha: `@tiptap/core` (declarado em `package.json`) não resolve a partir do `BlockEditor.svelte` compartilhado em `@sp/ui-core` — parece ser um problema de resolução de módulo via o symlink do monorepo (Rollup). Não investigado a fundo; não relacionado à mudança de `app.css` acima.
+
+### Fixed
+- Resolved Module Federation Hydration and Build issues by using Vanilla JS Wrappers for remote components.
+
+### Security
+- **Trivy (SCA)**: corrigidas 3 vulnerabilidades `HIGH` do gate `FOSS DevSecOps` — `CVE-2026-59869` (`js-yaml`, DoS) via bump para `^4.3.0`; `CVE-2026-48801`/`CVE-2026-59887` (`linkify-it`, DoS algorítmico/mailto) via override forçado para `5.0.2`. Revalidado localmente com Trivy v0.72.0 real: 0 vulnerabilidades.
+- **Semgrep (SAST)**: `actions/checkout@v4` e `actions/setup-node@v4` fixados em SHA de commit em todos os workflows, resolvendo a regra `github-actions-mutable-action-tag`.
 
 ## [0.1.0] - 2026-05-09 a 2026-06-18
 
@@ -38,7 +45,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 - `devalue` atualizado para 5.8.1, corrigindo CVE-2026-42570; hook de pre-push Gitleaks adicionado; `package-lock.json` versionado.
-
-## [Unreleased]
-### Fixed
-- Resolved Module Federation Hydration and Build issues by using Vanilla JS Wrappers for remote components.
