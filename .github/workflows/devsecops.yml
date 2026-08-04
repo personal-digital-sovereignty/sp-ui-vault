@@ -2,6 +2,9 @@
 # sp-ui-vault — FOSS DevSecOps Pipeline
 # =============================================================================
 # Esteira de validação completa que DEVE passar antes de qualquer merge.
+# Consolida o antigo workflow "sp-ui-vault CI" (build+test) nesta mesma
+# esteira — um único gate agregador, sem pipelines duplicadas rodando em
+# paralelo para o mesmo PR.
 
 name: FOSS DevSecOps
 
@@ -86,24 +89,8 @@ jobs:
         steps:
             - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-            - name: Checkout sp-ui-core
-              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-              with:
-                  repository: personal-digital-sovereignty/sp-ui-core
-                  ref: main
-                  path: sp-ui-core
-
-            - name: Link sp-ui-core
-              run: ln -s "$(pwd)/sp-ui-core" ../sp-ui-core
-
-            - name: Setup Node.js
-              uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
-              with:
-                  node-version: '22'
-                  cache: 'npm'
-
-            - name: Install Dependencies
-              run: npm install
+            - name: Setup sp-ui-core
+              uses: personal-digital-sovereignty/sp-ui-core@f3cbcd6d6178283d8e72ef542a4c32ed0a6aa780 # release-v1.5.0-rc.1
 
             - name: Run SvelteKit Check
               run: npm run check || true
@@ -115,27 +102,24 @@ jobs:
         steps:
             - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-            - name: Checkout sp-ui-core
-              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-              with:
-                  repository: personal-digital-sovereignty/sp-ui-core
-                  ref: main
-                  path: sp-ui-core
-
-            - name: Link sp-ui-core
-              run: ln -s "$(pwd)/sp-ui-core" ../sp-ui-core
-
-            - name: Setup Node.js
-              uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
-              with:
-                  node-version: '22'
-                  cache: 'npm'
-
-            - name: Install Dependencies
-              run: npm install
+            - name: Setup sp-ui-core
+              uses: personal-digital-sovereignty/sp-ui-core@f3cbcd6d6178283d8e72ef542a4c32ed0a6aa780 # release-v1.5.0-rc.1
 
             - name: Run Vitest
-              run: npm test || true
+              run: npm test
+
+    quality-build:
+        name: '🏗️ Gate 5: Production Build'
+        needs: pipeline-security
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+            - name: Setup sp-ui-core
+              uses: personal-digital-sovereignty/sp-ui-core@f3cbcd6d6178283d8e72ef542a4c32ed0a6aa780 # release-v1.5.0-rc.1
+
+            - name: Build production bundle
+              run: npm run build
 
     foss-devsecops-gate:
         name: '✅ FOSS DevSecOps Gate'
@@ -146,6 +130,7 @@ jobs:
             - sca-trivy
             - quality-svelte
             - quality-test
+            - quality-build
         runs-on: ubuntu-latest
         permissions:
             statuses: write
@@ -158,6 +143,7 @@ jobs:
                   SCA_TRIVY: ${{ needs.sca-trivy.result }}
                   QUALITY_SVELTE: ${{ needs.quality-svelte.result }}
                   QUALITY_TEST: ${{ needs.quality-test.result }}
+                  QUALITY_BUILD: ${{ needs.quality-build.result }}
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   echo "═══════════════════════════════════════════════"
@@ -169,13 +155,16 @@ jobs:
                   echo "SCA (Trivy):        $SCA_TRIVY"
                   echo "Svelte (Check):     $QUALITY_SVELTE"
                   echo "Vitest (Tests):     $QUALITY_TEST"
+                  echo "Build (Prod):       $QUALITY_BUILD"
                   echo ""
 
                   STATE="success"
                   DESC="ALL FOSS DevSecOps Gates Passed - Merge authorized."
 
                   if [[ "$PIPELINE_SECURITY" == "failure" ]] || \
-                     [[ "$SAST_SEMGREP" == "failure" ]]; then
+                     [[ "$SAST_SEMGREP" == "failure" ]] || \
+                     [[ "$QUALITY_TEST" == "failure" ]] || \
+                     [[ "$QUALITY_BUILD" == "failure" ]]; then
                     echo "❌ CRITICAL GATE FAILURE — Merge blocked."
                     STATE="failure"
                     DESC="CRITICAL GATE FAILURE - Merge blocked."
@@ -185,8 +174,8 @@ jobs:
                     echo "::warning::Trivy SCA failed — review dependency vulnerabilities."
                   fi
 
-                  if [[ "$QUALITY_TEST" == "failure" ]]; then
-                    echo "::warning::Vitest failed — review test output."
+                  if [[ "$QUALITY_SVELTE" == "failure" ]]; then
+                    echo "::warning::Svelte Check failed — review type errors (non-blocking by design)."
                   fi
 
                   SHA="${{ github.event.pull_request.head.sha }}"
