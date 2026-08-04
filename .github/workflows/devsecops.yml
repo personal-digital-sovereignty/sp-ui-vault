@@ -36,7 +36,7 @@ jobs:
             security-events: write
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
             - name: Check workflow YAML syntax (Actionlint)
               uses: raven-actions/actionlint@205b530c5d9fa8f44ae9ed59f341a0db994aa6f8 # v2.1.2
@@ -55,7 +55,7 @@ jobs:
         container:
             image: semgrep/semgrep
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
             - name: Run Semgrep with strict enforcement
               run: semgrep scan --config auto --error
@@ -67,7 +67,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
             - name: Scan for CRITICAL/HIGH vulnerabilities in dependencies
               uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
@@ -84,10 +84,10 @@ jobs:
         needs: pipeline-security
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
             - name: Checkout sp-ui-core
-              uses: actions/checkout@v4
+              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
               with:
                   repository: personal-digital-sovereignty/sp-ui-core
                   ref: main
@@ -97,7 +97,7 @@ jobs:
               run: ln -s "$(pwd)/sp-ui-core" ../sp-ui-core
 
             - name: Setup Node.js
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@3963e1d654f8c27140a08709ec7944151b4cc521 # v4.1.0
               with:
                   node-version: '22'
                   cache: 'npm'
@@ -113,10 +113,10 @@ jobs:
         needs: pipeline-security
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
             - name: Checkout sp-ui-core
-              uses: actions/checkout@v4
+              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
               with:
                   repository: personal-digital-sovereignty/sp-ui-core
                   ref: main
@@ -126,7 +126,7 @@ jobs:
               run: ln -s "$(pwd)/sp-ui-core" ../sp-ui-core
 
             - name: Setup Node.js
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@3963e1d654f8c27140a08709ec7944151b4cc521 # v4.1.0
               with:
                   node-version: '22'
                   cache: 'npm'

@@ -28,10 +28,10 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Checkout sp-ui-core
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: personal-digital-sovereignty/sp-ui-core
           ref: main
@@ -42,7 +42,7 @@ jobs:
 
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@3963e1d654f8c27140a08709ec7944151b4cc521 # v4.1.0
         with:
           node-version: '22'
           cache: 'npm'
