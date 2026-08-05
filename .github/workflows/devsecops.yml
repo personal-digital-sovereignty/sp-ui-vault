@@ -90,7 +90,7 @@ jobs:
             - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
             - name: Setup sp-ui-core
-              uses: personal-digital-sovereignty/sp-ui-core@f3cbcd6d6178283d8e72ef542a4c32ed0a6aa780 # release-v1.5.0-rc.1
+              uses: personal-digital-sovereignty/sp-ui-core@f66fca5cdda2b714775342fecc4901c0630c0fca # release-v1.5.0-rc.1
 
             - name: Run SvelteKit Check
               run: npm run check || true
@@ -103,7 +103,7 @@ jobs:
             - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
             - name: Setup sp-ui-core
-              uses: personal-digital-sovereignty/sp-ui-core@f3cbcd6d6178283d8e72ef542a4c32ed0a6aa780 # release-v1.5.0-rc.1
+              uses: personal-digital-sovereignty/sp-ui-core@f66fca5cdda2b714775342fecc4901c0630c0fca # release-v1.5.0-rc.1
 
             - name: Run Vitest
               run: npm test
@@ -116,7 +116,7 @@ jobs:
             - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
             - name: Setup sp-ui-core
-              uses: personal-digital-sovereignty/sp-ui-core@f3cbcd6d6178283d8e72ef542a4c32ed0a6aa780 # release-v1.5.0-rc.1
+              uses: personal-digital-sovereignty/sp-ui-core@f66fca5cdda2b714775342fecc4901c0630c0fca # release-v1.5.0-rc.1
 
             - name: Build production bundle
               run: npm run build
