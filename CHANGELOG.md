@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.7.0-dev] - 2026-08-04
+## [1.7.0] - 2026-08-06
 
 ### Changed
 - **Design System centralizado**: `app.css` agora importa `@sp/ui-core/theme.css` em vez de manter cópia própria.
